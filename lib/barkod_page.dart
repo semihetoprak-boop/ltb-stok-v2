@@ -16,6 +16,8 @@ class BarkodPage extends StatefulWidget {
 class _BarkodPageState extends State<BarkodPage> {
   final MobileScannerController controller = MobileScannerController();
 
+  bool _isProcessing = false;
+
   String barkod = " ";
 
   Map<String, dynamic>? urun;
@@ -67,11 +69,20 @@ class _BarkodPageState extends State<BarkodPage> {
             child: MobileScanner(
               controller: controller,
               onDetect: (capture) async {
-                if (capture.barcodes.isEmpty) return;
+                if (_isProcessing) return;
+                _isProcessing = true;
+
+                if (capture.barcodes.isEmpty) {
+                  _isProcessing = false;
+                  return;
+                }
 
                 final barcode = capture.barcodes.first;
 
-                if (barcode.rawValue == null) return;
+                if (barcode.rawValue == null) {
+                  _isProcessing = false;
+                  return;
+                }
 
                 final code = barcode.rawValue!;
 
@@ -148,7 +159,9 @@ class _BarkodPageState extends State<BarkodPage> {
                   stoklar = List<Map<String, dynamic>>.from(tumStoklar);
                   rafNo = bulunanRaf;
                 });
-                controller.stop();
+                await Future.delayed(const Duration(milliseconds: 800));
+                _isProcessing = false;
+                // controller.stop();
               },
             ),
           ),
