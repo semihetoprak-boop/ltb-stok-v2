@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'supabase_service.dart';
 import 'diger_magazalar_page.dart';
+import 'models/product.dart';
+import 'services/supabase_stock_repository.dart';
 
 class BarkodPage extends StatefulWidget {
   final String rol;
@@ -15,6 +17,8 @@ class BarkodPage extends StatefulWidget {
 
 class _BarkodPageState extends State<BarkodPage> {
   final MobileScannerController controller = MobileScannerController();
+
+  final _repository = SupabaseStockRepository();
 
   bool _isProcessing = false;
 
@@ -86,16 +90,14 @@ class _BarkodPageState extends State<BarkodPage> {
 
                 final code = barcode.rawValue!;
 
-                final sonuc = await SupabaseService.client
-                    .from('stoklar')
-                    .select()
-                    .eq('Barkod', code);
+                final product = await _repository.getByBarcode(code);
 
-                if (sonuc.isEmpty) {
+                if (product == null) {
+                  _isProcessing = false;
                   return;
                 }
 
-                final urunKodu = sonuc.first['Ürün Kodu'];
+                final urunKodu = product.productCode;
 
                 dynamic sorgu = SupabaseService.client
                     .from('stoklar')
@@ -111,12 +113,12 @@ class _BarkodPageState extends State<BarkodPage> {
                 final rafSorgu = await SupabaseService.client
                     .from('raflar')
                     .select()
-                    .eq('urun_adi', sonuc.first['Ürün Adı'])
+                    .eq('urun_adi', product.productName)
                     .eq('magaza_adi', widget.magaza);
 
                 if (rafSorgu.isNotEmpty) {
-                  if (sonuc.first['UH_KATEGORİ'] == 'DENIM') {
-                    final yikama = sonuc.first['YIKAMA Açıklama'] ?? "";
+                  if (product.category == 'DENIM') {
+                    final yikama = product.wash ?? "";
 
                     final kayit = rafSorgu.firstWhere(
                       (r) => r['yikama'] == yikama,
@@ -135,13 +137,10 @@ class _BarkodPageState extends State<BarkodPage> {
                   dynamic rafSorgu = SupabaseService.client
                       .from('raflar')
                       .select()
-                      .eq('urun_adi', sonuc.first['Ürün Adı']);
+                      .eq('urun_adi', product.productName);
 
-                  if (sonuc.first['UH_KATEGORİ'] == 'DENİM') {
-                    rafSorgu = rafSorgu.eq(
-                      'yikama',
-                      sonuc.first['YIKAMA Açıklama'] ?? 'EMPTY',
-                    );
+                  if (product.category == 'DENİM') {
+                    rafSorgu = rafSorgu.eq('yikama', product.wash ?? 'EMPTY');
                   }
 
                   rafSorgu = rafSorgu.eq('magaza_adi', widget.magaza);
@@ -155,7 +154,18 @@ class _BarkodPageState extends State<BarkodPage> {
 
                 setState(() {
                   barkod = code;
-                  urun = sonuc.first;
+                  urun = {
+                    'Ürün Kodu': product.productCode,
+                    'Barkod': product.barcode,
+                    'Ürün Adı': product.productName,
+                    'Renk Kodu': product.colorCode,
+                    'Renk Açıklaması': product.colorName,
+                    'Beden': product.size,
+                    'Envanter': product.stock,
+                    'Mağaza Adı': product.store,
+                    'UH_KATEGORİ': product.category,
+                    'YIKAMA Açıklama': product.wash,
+                  };
                   stoklar = List<Map<String, dynamic>>.from(tumStoklar);
                   rafNo = bulunanRaf;
                 });

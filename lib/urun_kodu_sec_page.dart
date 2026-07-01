@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'supabase_service.dart';
 import 'barkodsuz_sonuc_page.dart';
+import 'models/product.dart';
+import 'services/supabase_stock_repository.dart';
 
 class UrunKoduSecPage extends StatefulWidget {
   final String urunAdi;
@@ -19,6 +21,7 @@ class UrunKoduSecPage extends StatefulWidget {
 }
 
 class _UrunKoduSecPageState extends State<UrunKoduSecPage> {
+  final _repository = SupabaseStockRepository();
   List<Map<String, dynamic>> urunler = [];
   bool yukleniyor = true;
 
@@ -29,18 +32,15 @@ class _UrunKoduSecPageState extends State<UrunKoduSecPage> {
   }
 
   Future<void> urunleriGetir() async {
-    final sonuc = await SupabaseService.client
-        .from("stoklar")
-        .select()
-        .eq("Ürün Adı", widget.urunAdi);
+    final sonuc = await _repository.getByProductName(widget.urunAdi);
 
     setState(() {
       final map = <String, Map<String, dynamic>>{};
 
       for (final u in sonuc) {
         map.putIfAbsent(
-          u["Ürün Kodu"].toString(),
-          () => Map<String, dynamic>.from(u),
+          u.productCode,
+          () => {"Ürün Kodu": u.productCode, "Ürün Adı": u.productName},
         );
       }
 

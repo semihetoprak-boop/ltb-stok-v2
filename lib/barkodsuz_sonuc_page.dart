@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'supabase_service.dart';
 import 'diger_magazalar_page.dart';
 import 'urun_kodu_sec_page.dart';
+import 'services/supabase_stock_repository.dart';
 
 class BarkodsuzSonucPage extends StatefulWidget {
   final String urunAdi;
@@ -26,6 +27,7 @@ class _BarkodsuzSonucPageState extends State<BarkodsuzSonucPage> {
   List<Map<String, dynamic>> stoklar = [];
   String rafNo = "-";
   bool yukleniyor = true;
+  final _repository = SupabaseStockRepository();
 
   @override
   void initState() {
@@ -65,10 +67,7 @@ class _BarkodsuzSonucPageState extends State<BarkodsuzSonucPage> {
   }
 
   Future<void> urunuGetir() async {
-    final sonuc = await SupabaseService.client
-        .from("stoklar")
-        .select()
-        .eq("Ürün Kodu", widget.urunKodu);
+    final sonuc = await _repository.getByProductCode(widget.urunKodu);
 
     print(sonuc);
 
@@ -79,10 +78,31 @@ class _BarkodsuzSonucPageState extends State<BarkodsuzSonucPage> {
       return;
     }
 
-    urun = sonuc.first;
-    stoklar = List<Map<String, dynamic>>.from(
-      sonuc.where((e) => e["Mağaza Adı"] == widget.magaza),
-    );
+    final product = sonuc.first;
+
+    urun = {
+      "Ürün Adı": product.productName,
+      "Ürün Kodu": product.productCode,
+      "UH_KATEGORİ": product.category,
+      "YIKAMA Açıklama": product.wash,
+    };
+
+    stoklar = sonuc
+        .where((e) => widget.rol == "admin" || e.store == widget.magaza)
+        .map(
+          (e) => {
+            "Ürün Kodu": e.productCode,
+            "Ürün Adı": e.productName,
+            "Renk Kodu": e.colorCode,
+            "Renk Açıklaması": e.colorName,
+            "Beden": e.size,
+            "Envanter": e.stock,
+            "Mağaza Adı": e.store,
+            "UH_KATEGORİ": e.category,
+            "YIKAMA Açıklama": e.wash,
+          },
+        )
+        .toList();
 
     String bulunanRaf = "--";
 

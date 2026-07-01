@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'supabase_service.dart';
+import 'services/supabase_stock_repository.dart';
+import 'models/product.dart';
 
 class DigerMagazalarPage extends StatelessWidget {
   final String urunKodu;
@@ -10,7 +12,9 @@ class DigerMagazalarPage extends StatelessWidget {
   final String kategori;
   final String yikama;
 
-  const DigerMagazalarPage({
+  final _repository = SupabaseStockRepository();
+
+  DigerMagazalarPage({
     super.key,
     required this.urunKodu,
     required this.renkKodu,
@@ -25,23 +29,15 @@ class DigerMagazalarPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Diğer Mağazalar")),
-      body: FutureBuilder(
-        future: () async {
-          var query = SupabaseService.client
-              .from('stoklar')
-              .select()
-              .eq('Ürün Kodu', urunKodu)
-              .eq('Renk Kodu', renkKodu)
-              .eq('Beden', beden)
-              .neq('Mağaza Adı', mevcutMagaza)
-              .gt('Envanter', 0);
-
-          if (kategori.toUpperCase() == 'DENİM') {
-            query = query.eq('YIKAMA Açıklama', yikama);
-          }
-
-          return await query;
-        }(),
+      body: FutureBuilder<List<Product>>(
+        future: _repository.getOtherStores(
+          productCode: urunKodu,
+          colorCode: renkKodu,
+          size: beden,
+          currentStore: mevcutMagaza,
+          category: kategori,
+          wash: yikama,
+        ),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -51,7 +47,7 @@ class DigerMagazalarPage extends StatelessWidget {
             return Center(child: Text(snapshot.error.toString()));
           }
 
-          final liste = snapshot.data as List? ?? [];
+          final liste = snapshot.data ?? <Product>[];
 
           if (liste.isEmpty) {
             return const Center(
@@ -66,9 +62,9 @@ class DigerMagazalarPage extends StatelessWidget {
 
               return ListTile(
                 leading: const Icon(Icons.store),
-                title: Text(s["Mağaza Adı"].toString()),
+                title: Text(s.store),
                 trailing: Text(
-                  s["Envanter"].toString(),
+                  s.stock.toString(),
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
