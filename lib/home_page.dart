@@ -6,7 +6,6 @@ import 'raf_yonetimi_page.dart';
 import 'barkodsuz_ara_page.dart';
 import 'services/auth_service.dart';
 import 'admin_sifre_page.dart';
-import 'services/nebim_api_services.dart';
 
 class HomePage extends StatelessWidget {
   final String kullanici;
@@ -199,37 +198,6 @@ class HomePage extends StatelessWidget {
                       );
                     },
                   ),
-                ),
-              ),
-            if (rol == 'admin')
-              Padding(
-                padding: const EdgeInsets.only(top: 15),
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.api),
-                  label: const Text('Nebim API Test'),
-                  onPressed: () async {
-                    try {
-                      final sonuc = await NebimApiService.testConnection();
-
-                      if (!context.mounted) return;
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('NEBIM TEST: $sonuc'),
-                          duration: const Duration(seconds: 10),
-                        ),
-                      );
-                    } catch (e) {
-                      if (!context.mounted) return;
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('NEBIM HATA: $e'),
-                          duration: const Duration(seconds: 10),
-                        ),
-                      );
-                    }
-                  },
                 ),
               ),
             const Spacer(),
