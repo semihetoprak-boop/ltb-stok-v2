@@ -1,0 +1,21 @@
+LTB STOK V2 - ANALYZER TEMİZLİK SÜRÜMÜ
+
+Bu sürüm, Repository güncellemesi test edilip tüm uygulama akışları çalıştıktan sonra hazırlanmıştır.
+
+Temizlenen analyzer konuları:
+- Kullanılmayan importlar kaldırıldı.
+- Kullanılmayan local variable kaldırıldı.
+- Debug print kaldırıldı.
+- Gereksiz toList çağrısı kaldırıldı.
+- Tek satırlı if bloğu süslü paranteze alındı.
+- Eksik @override eklendi, yanlış @override kaldırıldı.
+- Async işlem sonrası BuildContext/mounted kontrolleri düzenlendi.
+- Raf yönetimindeki duplicate import kaldırıldı.
+- Kullanılmayan web anchor değişkeni kaldırıldı.
+- Supabase eski anonKey kullanımı publishableKey kullanımına geçirildi.
+
+Repository mimarisi ve mevcut çalışan işlevler korunmuştur.
+
+SONRAKİ ADIM:
+flutter analyze
+Ardından flutter run -d chrome ile mevcut akışların tekrar doğrulanması.

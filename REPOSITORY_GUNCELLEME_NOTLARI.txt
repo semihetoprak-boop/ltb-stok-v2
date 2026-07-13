@@ -1,0 +1,19 @@
+LTB STOK V2 - REPOSITORY GÜNCELLEMESİ
+
+Yapılan değişiklikler:
+1. StockRepository sözleşmesine getByProductName eklendi.
+2. Kullanılmayan updateStock sözleşmesi kaldırıldı.
+3. SupabaseStockRepository içindeki search metodu tamamlandı.
+4. Ürün adı ve ürün kodunda kısmi arama desteği eklendi.
+5. Product map işlemleri tek noktada toplandı.
+6. DENIM / DENİM kategori kontrolü normalize edildi.
+7. Barkod ekranındaki doğrudan 'stoklar' Supabase sorgusu kaldırıldı.
+8. Barkod ekranı stok verisini StockRepository üzerinden almaya başladı.
+9. Barkodsuz sonuç ekranındaki kategori ve yıkama alan anahtarı hataları düzeltildi.
+
+Not:
+Nebim API bilgileri geldiğinde aynı StockRepository sözleşmesini uygulayan
+NebimStockRepository oluşturulacaktır.
+
+Bu ortamda Flutter SDK bulunmadığı için flutter analyze/build çalıştırılamadı.
+Proje kendi geliştirme bilgisayarında flutter analyze ve flutter run ile doğrulanmalıdır.

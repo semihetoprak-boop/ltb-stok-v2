@@ -1,0 +1,12 @@
+LTB STOK V2 - AUTH + RLS GÜVENLİK AŞAMASI
+
+- Düz şifre sorgusu kaldırıldı.
+- Supabase Auth signInWithPassword kullanıldı.
+- Kullanıcı adı arayüzü korundu; Auth tarafında dahili @ltbstok.local e-posta formatına çevriliyor.
+- profiles modeli ve AuthService eklendi.
+- Çıkışta gerçek Supabase Auth signOut eklendi.
+- profiles/stoklar/mağazalar/raflar RLS politikaları hazırlandı.
+- Eski users tablosu anon ve authenticated istemci rollerine kapatıldı.
+- Raf değişiklikleri admin veya kendi mağaza müdürü ile sınırlandı.
+
+Kurulumdan önce README_GUVENLIK_KURULUM.md okunmalıdır.
