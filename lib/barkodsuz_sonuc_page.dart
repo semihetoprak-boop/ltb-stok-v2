@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'supabase_service.dart';
 import 'diger_magazalar_page.dart';
-import 'urun_kodu_sec_page.dart';
 import 'services/supabase_stock_repository.dart';
 
 class BarkodsuzSonucPage extends StatefulWidget {
@@ -68,8 +67,6 @@ class _BarkodsuzSonucPageState extends State<BarkodsuzSonucPage> {
 
   Future<void> urunuGetir() async {
     final sonuc = await _repository.getByProductCode(widget.urunKodu);
-
-    print(sonuc);
 
     if (sonuc.isEmpty) {
       setState(() {
@@ -188,12 +185,6 @@ class _BarkodsuzSonucPageState extends State<BarkodsuzSonucPage> {
                         final beden = entry.key;
                         final liste = entry.value;
 
-                        final envanter = liste.fold<int>(0, (toplam, e) {
-                          final adet =
-                              int.tryParse(e["Envanter"].toString()) ?? 0;
-                          return toplam + adet;
-                        });
-
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -228,11 +219,11 @@ class _BarkodsuzSonucPageState extends State<BarkodsuzSonucPage> {
                                           beden: s["Beden"].toString(),
                                           mevcutMagaza: widget.magaza,
                                           kategori:
-                                              urun?["ÜH_KATEGORİ"]
+                                              urun?["UH_KATEGORİ"]
                                                   ?.toString() ??
                                               "",
                                           yikama:
-                                              urun?["Açıklama"]?.toString() ??
+                                              urun?["YIKAMA Açıklama"]?.toString() ??
                                               "",
                                         ),
                                       ),

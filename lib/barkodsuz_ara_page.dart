@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'urun_kodu_sec_page.dart';
-import 'models/product.dart';
-import 'services/supabase_stock_repository.dart';
 
 class BarkodsuzAraPage extends StatefulWidget {
   final String magaza;
@@ -15,7 +13,6 @@ class BarkodsuzAraPage extends StatefulWidget {
 
 class _BarkodsuzAraPageState extends State<BarkodsuzAraPage> {
   final TextEditingController urunController = TextEditingController();
-  final _repository = SupabaseStockRepository();
 
   @override
   Widget build(BuildContext context) {

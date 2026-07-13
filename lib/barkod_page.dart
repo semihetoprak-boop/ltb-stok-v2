@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'supabase_service.dart';
 import 'diger_magazalar_page.dart';
-import 'models/product.dart';
 import 'services/supabase_stock_repository.dart';
 
 class BarkodPage extends StatefulWidget {
@@ -99,16 +98,31 @@ class _BarkodPageState extends State<BarkodPage> {
 
                 final urunKodu = product.productCode;
 
-                dynamic sorgu = SupabaseService.client
-                    .from('stoklar')
-                    .select()
-                    .eq('Ürün Kodu', urunKodu);
+                final urunStoklari = await _repository.getByProductCode(
+                  urunKodu,
+                );
 
-                if (widget.rol != "admin") {
-                  sorgu = sorgu.eq("Mağaza Adı", widget.magaza);
-                }
-
-                final tumStoklar = await sorgu;
+                final tumStoklar = urunStoklari
+                    .where(
+                      (item) =>
+                          widget.rol == "admin" ||
+                          item.store == widget.magaza,
+                    )
+                    .map(
+                      (item) => {
+                        'Ürün Kodu': item.productCode,
+                        'Barkod': item.barcode,
+                        'Ürün Adı': item.productName,
+                        'Renk Kodu': item.colorCode,
+                        'Renk Açıklaması': item.colorName,
+                        'Beden': item.size,
+                        'Envanter': item.stock,
+                        'Mağaza Adı': item.store,
+                        'UH_KATEGORİ': item.category,
+                        'YIKAMA Açıklama': item.wash,
+                      },
+                    )
+                    .toList();
                 String bulunanRaf = "-";
                 final rafSorgu = await SupabaseService.client
                     .from('raflar')
@@ -296,8 +310,9 @@ class _BarkodPageState extends State<BarkodPage> {
                                               },
                                             );
 
-                                        if (yeniRaf == null || yeniRaf.isEmpty)
+                                        if (yeniRaf == null || yeniRaf.isEmpty) {
                                           return;
+                                        }
                                         final mevcut = await SupabaseService
                                             .client
                                             .from('raflar')
@@ -325,6 +340,8 @@ class _BarkodPageState extends State<BarkodPage> {
                                               .update({'raf_no': yeniRaf})
                                               .eq('id', mevcut.first['id']);
                                         }
+
+                                        if (!context.mounted) return;
 
                                         setState(() {
                                           rafNo = yeniRaf;
@@ -399,7 +416,7 @@ class _BarkodPageState extends State<BarkodPage> {
                                           rafNo = "-";
                                         });
 
-                                        if (mounted) {
+                                        if (context.mounted) {
                                           ScaffoldMessenger.of(
                                             context,
                                           ).showSnackBar(
@@ -514,7 +531,7 @@ class _BarkodPageState extends State<BarkodPage> {
                           ),
                         ),
                       );
-                    }).toList(),
+                    }),
                   ],
                 ),
               ),

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'supabase_service.dart';
 import 'barkodsuz_sonuc_page.dart';
-import 'models/product.dart';
 import 'services/supabase_stock_repository.dart';
 
 class UrunKoduSecPage extends StatefulWidget {

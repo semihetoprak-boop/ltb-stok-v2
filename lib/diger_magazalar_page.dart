@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'supabase_service.dart';
 import 'services/supabase_stock_repository.dart';
 import 'models/product.dart';
 

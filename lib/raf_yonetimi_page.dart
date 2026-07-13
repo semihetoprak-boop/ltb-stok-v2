@@ -5,8 +5,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:excel/excel.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart';
-import 'dart:typed_data';
-import 'package:flutter/foundation.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:universal_html/html.dart' as html;
 
@@ -253,7 +251,7 @@ class _RafYonetimiPageState extends State<RafYonetimiPage> {
 
       final url = html.Url.createObjectUrlFromBlob(blob);
 
-      final anchor = html.AnchorElement(href: url)
+      html.AnchorElement(href: url)
         ..download = "Raflar_${widget.magaza}.xlsx"
         ..click();
 
@@ -271,6 +269,7 @@ class _RafYonetimiPageState extends State<RafYonetimiPage> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

@@ -5,11 +5,14 @@ abstract class StockRepository {
 
   Future<List<Product>> getByProductCode(String productCode);
 
+  Future<List<Product>> getByProductName(String productName);
+
   Future<List<Product>> search({
     required String text,
     required String store,
     required String role,
   });
+
   Future<List<Product>> getOtherStores({
     required String productCode,
     required String colorCode,
@@ -18,6 +21,4 @@ abstract class StockRepository {
     required String category,
     required String wash,
   });
-
-  Future<void> updateStock({required String productCode, required int stock});
 }
